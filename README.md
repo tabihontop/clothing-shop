@@ -88,8 +88,15 @@ Open `js/data/products.js`. The comment at the top explains every field. Rules:
   the product shows "Sold out".
 - Caps and other one-size items have a single size: `{ size: 'One size', ... }`.
 - Products with the same `group` are linked as colour options of each other
-  (e.g. the black and bone hoodie).
-- `featured: true` puts a product on the home page.
+  (e.g. the black and fog Shift Hoodie).
+- `featured: true` puts a product on the home page. The first featured product is
+  shown by day and under a flash in the home page hero and Night Mark section.
+- `nightMark` is a sentence on where the reflective mark sits; it shows on the
+  product page.
+- `drop: null` marks an Essential (restocked). `drop: { hour: '22:00', run: 60 }`
+  marks a numbered Hour Drop: it gets a "22:00 · Run of 60" badge, and the
+  validator warns if stock is higher than the run. The brand rules behind these
+  are in `BRAND.md` (kept private, not pushed).
 - `createdAt` drives "Newest" sorting and the NEW badge (30 days).
 - Categories and size-guide tables are at the top of the same file.
 
@@ -106,8 +113,8 @@ when someone pays. Update the numbers yourself after orders (see "Limitations").
 2. List them on the product, first one is the main image:
 
    ```js
-   images: ['images/products/heavyweight-hoodie-black-1.jpg',
-            'images/products/heavyweight-hoodie-black-2.jpg'],
+   images: ['images/products/shift-hoodie-black-1.jpg',
+            'images/products/shift-hoodie-black-2.jpg'],
    ```
 
 3. Leave `images: []` to keep the generated placeholder drawing.
@@ -147,7 +154,7 @@ customer cannot change it, and card details never touch this site.
 5. Paste it into `js/data/products.js` on the matching size:
 
    ```js
-   { size: 'M', sku: 'KRB-HHD-BLK-M', stock: 12, paymentLink: 'https://buy.stripe.com/test_abc123' },
+   { size: 'M', sku: 'NCT-SHD-BLK-M', stock: 12, paymentLink: 'https://buy.stripe.com/test_abc123' },
    ```
 
    You can instead put one link on the product (`paymentLink` next to `price`) and

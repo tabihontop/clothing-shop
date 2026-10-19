@@ -91,6 +91,12 @@ export function validateCatalog(products, categories, sizeGuides = {}) {
     if (!Array.isArray(p.images)) errors.push(`${where}: images must be a list (can be empty)`);
     if (p.sizeGuide && !sizeGuides[p.sizeGuide]) errors.push(`${where}: unknown sizeGuide "${p.sizeGuide}"`);
     if (!isLink(p.paymentLink)) errors.push(`${where}: paymentLink must be an https:// URL or empty`);
+    if (p.nightMark != null && typeof p.nightMark !== 'string') errors.push(`${where}: nightMark must be text`);
+    if (p.drop != null) {
+      if (!/^\d{2}:\d{2}$/.test(p.drop.hour || '')) errors.push(`${where}: drop.hour must be 'HH:MM'`);
+      if (!Number.isInteger(p.drop.run) || p.drop.run <= 0) errors.push(`${where}: drop.run must be a positive whole number`);
+      else if (Array.isArray(p.sizes) && totalStock(p) > p.drop.run) errors.push(`${where}: stock is higher than the drop's run size`);
+    }
     if (!Array.isArray(p.sizes) || p.sizes.length === 0) {
       errors.push(`${where}: needs at least one size`);
       continue;

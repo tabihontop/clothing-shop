@@ -29,7 +29,11 @@ export function badgesHtml(product) {
   const badges = [];
   if (isSoldOut(product)) badges.push('<span class="badge badge--dark">Sold out</span>');
   else if (isOnSale(product)) badges.push(`<span class="badge badge--sale">-${discountPercent(product)}%</span>`);
-  if (!isSoldOut(product) && isNew(product)) badges.push('<span class="badge badge--accent">New</span>');
+  if (product.drop) {
+    badges.push(`<span class="badge badge--drop">${esc(product.drop.hour)} &middot; Run of ${product.drop.run}</span>`);
+  } else if (!isSoldOut(product) && isNew(product)) {
+    badges.push('<span class="badge badge--accent">New</span>');
+  }
   return badges.length ? `<div class="badges">${badges.join('')}</div>` : '';
 }
 

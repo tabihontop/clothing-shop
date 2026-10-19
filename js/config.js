@@ -9,7 +9,7 @@ export const config = {
     name: 'NOCTURN',
     tagline: 'Street-level essentials',
     description:
-      'Heavyweight hoodies, boxy tees, cargos and caps. Built for the street, made to last.',
+      'Clothes for the hours after 22:00. Every piece carries a reflective Night Mark: quiet by day, lit by headlights.',
     email: 'hello@example.com', // shown in the footer and on the policy pages
   },
 

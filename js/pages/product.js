@@ -61,7 +61,7 @@ function renderProduct(p) {
     images.length > 1
       ? `<div class="gallery__thumbs">${images
           .map(
-            (img, i) => `<button type="button" class="gallery__thumb" data-index="${i}" aria-label="Show image ${i + 1} of ${images.length}"${i === 0 ? ' aria-current="true"' : ''}>
+            (img, i) => `<button type="button" class="gallery__thumb${img.view === 'flash' ? ' gallery__thumb--flash' : ''}" data-index="${i}" aria-label="Show image ${i + 1} of ${images.length}${img.view === 'flash' ? ': under a flash' : ''}"${i === 0 ? ' aria-current="true"' : ''}>
               <img src="${esc(img.src)}" alt="" width="80" height="100" loading="lazy">
             </button>`
           )
@@ -119,6 +119,11 @@ function renderProduct(p) {
         <h1 class="pdp__title">${esc(p.name)}</h1>
         ${priceHtml(p, { large: true })}
         <p class="fine">${config.pricesIncludeVat ? 'Incl. VAT. ' : ''}<a href="shipping.html">Shipping</a> calculated in cart.</p>
+        ${
+          p.drop
+            ? `<p class="drop-note"><strong>Hour Drop ${esc(p.drop.hour)}</strong> &middot; Numbered run of ${p.drop.run} &middot; Never restocked</p>`
+            : `<p class="drop-note drop-note--essential"><strong>Essential</strong> &middot; Always restocked</p>`
+        }
         ${swatches}
         <form class="buy" novalidate data-buy>
           <fieldset class="sizes">
@@ -130,6 +135,15 @@ function renderProduct(p) {
           <button class="btn btn--primary btn--block" type="submit" ${soldOut ? 'disabled' : ''}>${soldOut ? 'Sold out' : 'Add to cart'}</button>
         </form>
         ${sizeGuideHtml(p.sizeGuide)}
+        ${
+          p.nightMark
+            ? `<div class="night-mark">
+                <h2 class="h-small">The Night Mark</h2>
+                <p>${esc(p.nightMark)}</p>
+                <p class="fine">Reflective print, not certified high-visibility safety clothing. Wash inside out at 30&deg;C, no tumble dryer: the mark dulls slowly over time, like road paint.</p>
+              </div>`
+            : ''
+        }
         <div class="pdp__desc">
           <h2 class="h-small">Description</h2>
           <p>${esc(p.description)}</p>

@@ -187,6 +187,15 @@ test('checkout mode is demo when no item has a link', () => {
   eq(checkoutMode(withLink, { mode: 'auto' }), 'links');
   eq(checkoutMode(withLink, { mode: 'demo' }), 'demo');
 });
+test('validateCatalog checks Hour Drop fields', () => {
+  const base = fx[0];
+  const ok1 = validateCatalog([{ ...base, drop: { hour: '22:00', run: 60 }, nightMark: 'Back yoke' }], categories, sizeGuides);
+  eq(ok1, []);
+  const bad = validateCatalog([{ ...base, drop: { hour: '10pm', run: 1 }, nightMark: 3 }], categories, sizeGuides);
+  ok(bad.some((e) => e.includes('drop.hour')), 'bad hour flagged');
+  ok(bad.some((e) => e.includes('higher than the drop')), 'stock above run flagged');
+  ok(bad.some((e) => e.includes('nightMark')), 'non-text nightMark flagged');
+});
 
 // ---- real catalog ----------------------------------------------------------
 test('real product data passes validation', () => {
@@ -196,16 +205,16 @@ test('real product data passes validation', () => {
 });
 test('real catalog: a full cart total is computed in integer cents', () => {
   let items = [];
-  items = addItem(items, products, 'heavyweight-hoodie-black', 'M', 1).items; // 8900
-  items = addItem(items, products, 'zip-hoodie-olive', 'S', 1).items; // sale 7600
-  items = addItem(items, products, 'ribbed-beanie-rust', 'One size', 5).items; // capped at 3 x 2900
+  items = addItem(items, products, 'shift-hoodie-black', 'M', 1).items; // 8900
+  items = addItem(items, products, 'courier-zip-hoodie-asphalt', 'S', 1).items; // 9500
+  items = addItem(items, products, 'night-shift-tee-sodium', 'XL', 5).items; // capped at 4 x 4500
   const r = resolveCart(items, products);
   const t = computeTotals(r.lines, config.shipping);
-  eq(r.lines.find((l) => l.key === lineKey('ribbed-beanie-rust', 'One size')).qty, 3);
-  eq(t.subtotal, 8900 + 7600 + 3 * 2900);
+  eq(r.lines.find((l) => l.key === lineKey('night-shift-tee-sodium', 'XL')).qty, 4);
+  eq(t.subtotal, 8900 + 9500 + 4 * 4500);
   eq(t.shipping, 0);
-  eq(t.total, 25200);
-  let small = addItem([], products, 'boxy-tee-white', 'M', 1).items;
+  eq(t.total, 36400);
+  let small = addItem([], products, 'essential-tee-fog', 'M', 1).items;
   eq(computeTotals(resolveCart(small, products).lines, config.shipping), {
     subtotal: 3900, shipping: config.shipping.flatFee, total: 3900 + config.shipping.flatFee, itemCount: 1, freeShippingRemaining: 6100,
   });

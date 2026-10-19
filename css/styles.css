@@ -10,7 +10,7 @@
   --ink-2: #2a2a2a;
   --muted: #5b5a56;
   --line: #d9d6ce;
-  --accent: #d7ff3a;
+  --accent: #ff7a1a; /* Sodium Orange, house code 3 (BRAND.md) */
   --sale: #c0261a;
   --ok: #1b6e35;
   --warn-bg: #fff4d6;
@@ -181,7 +181,7 @@ main:focus { outline: none; }
   background: var(--accent); color: var(--ink);
   font-weight: 800; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
 }
-.hero__title { font-size: clamp(2.6rem, 11vw, 5.5rem); line-height: .92; margin-bottom: 20px; }
+.hero__title { font-size: clamp(2.2rem, 9.4vw, 5.5rem); line-height: .92; margin-bottom: 20px; }
 .hl { color: var(--accent); }
 .hero__lead { max-width: 34rem; color: #d8d6d0; font-size: 1.05rem; margin-bottom: 28px; }
 .hero__art { position: relative; min-height: 300px; }
@@ -191,7 +191,8 @@ main:focus { outline: none; }
 .hero__tile--2 { right: 0; top: 18%; transform: rotate(5deg); }
 .hero__art { aspect-ratio: 1 / 1; max-width: 520px; width: 100%; justify-self: center; }
 @media (min-width: 900px) {
-  .hero__inner { grid-template-columns: 1.1fr 1fr; align-items: center; padding-block: 72px; }
+  .hero__inner { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; padding-block: 72px; }
+  .hero__title { font-size: clamp(2.6rem, 5vw, 3.9rem); }
 }
 
 .usp { border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -239,6 +240,7 @@ main:focus { outline: none; }
 .badge--sale { background: var(--sale); color: #fff; }
 .badge--dark { background: var(--ink); color: #fff; }
 .badge--accent { background: var(--accent); color: var(--ink); }
+.badge--drop { background: var(--ink); color: var(--accent); }
 
 .price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 0; font-weight: 700; }
 .price--lg { font-size: 1.35rem; margin-bottom: 4px; }
@@ -463,3 +465,53 @@ select {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* ---- brand: Night Mark, codes, Hour Drops (see BRAND.md) ------------------ */
+.drop-note {
+  display: inline-block; margin: 4px 0 18px; padding: 6px 10px; border-radius: 4px;
+  background: var(--ink); color: #fff; font-size: .8rem; letter-spacing: .03em;
+}
+.drop-note strong { color: var(--accent); text-transform: uppercase; }
+.drop-note--essential { background: transparent; color: var(--ink); padding: 0; }
+.drop-note--essential strong { color: var(--ink); }
+
+.night-mark {
+  margin: 24px 0 8px; padding: 16px; border-radius: var(--radius);
+  background: #111114; color: #e9e7e1;
+}
+.night-mark .h-small { color: #fff; }
+.night-mark .h-small::before { content: ''; display: inline-block; width: 22px; height: 6px; margin-right: 10px; vertical-align: middle; background: #fffdf2; box-shadow: 0 0 10px 2px rgb(255 253 242 / .55); }
+.night-mark p { margin-bottom: .6em; }
+.night-mark .fine { color: #a9a7a1; margin: 0; }
+
+.gallery__thumb--flash { background: #0c0c0f; }
+
+.nightmark { background: #0c0c0f; color: #e9e7e1; --focus-color: var(--accent); }
+.nightmark__inner { display: grid; gap: 32px; padding-block: 56px; align-items: center; }
+.nightmark .section__title { color: #fff; }
+.nightmark .fine { color: #a9a7a1; }
+.nightmark__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.nightmark__fig { margin: 0; }
+.nightmark__fig img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); }
+.nightmark__fig figcaption {
+  margin-top: 8px; font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #a9a7a1;
+}
+@media (min-width: 900px) {
+  .nightmark__inner { grid-template-columns: 1fr 1.1fr; gap: 56px; padding-block: 80px; }
+}
+
+.codes {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px;
+}
+@media (min-width: 600px) { .codes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .codes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+.code { padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.code__n { display: block; margin-bottom: 10px; color: #b84a00; font-weight: 900; font-size: 1.4rem; font-stretch: 125%; }
+.code__t { font-size: 1.05rem; margin-bottom: 6px; }
+.code p { margin: 0; color: var(--muted); }
+
+.drops { background: var(--accent); color: var(--ink); }
+.drops__inner { padding-block: 48px; max-width: 900px; margin-inline: auto; }
+.drops__inner p { font-size: 1.05rem; max-width: 46rem; }
+.drops__inner p:last-child { margin-bottom: 0; }

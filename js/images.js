@@ -1,6 +1,8 @@
 // Product images.
 // If a product has real image paths in `images`, those are used.
-// Otherwise we draw a placeholder garment silhouette (SVG) in the product colour.
+// Otherwise we draw a placeholder garment silhouette (SVG) in the product colour,
+// in three views: front, back, and "flash" (the garment at night under a camera
+// flash, where the reflective Night Mark lights up - see BRAND.md).
 
 import { config } from './config.js';
 
@@ -33,18 +35,35 @@ function contrast(a, b) {
   return (l1 + 0.05) / (l2 + 0.05);
 }
 
-function paletteFor(fill) {
+// mark = colour of the reflective Night Mark: a quiet grey tone-on-tone by day,
+// near-white with a glow under the flash. glow = SVG attribute for mark elements.
+function paletteFor(fill, flash = false) {
   const lum = luminance(fill);
   const dark = lum < 0.06;
   const light = '#f6f4ef';
   const ink = '#151515';
+  const text = contrast(fill, light) >= contrast(fill, ink) ? light : ink;
+  if (flash) {
+    return {
+      fill: mix(fill, '#000000', 0.8),
+      bg: '#0c0c0f',
+      shade: mix(fill, '#000000', 0.72),
+      inner: '#050505',
+      line: '#34343a',
+      text: mix(text, '#000000', 0.7),
+      mark: '#fffdf2',
+      glow: 'filter="url(#nm-glow)"',
+    };
+  }
   return {
     fill,
     bg: lum > 0.55 ? '#d6d2c9' : '#e9e6df',
     shade: dark ? mix(fill, '#ffffff', 0.07) : mix(fill, '#000000', 0.14),
     inner: mix(fill, '#000000', dark ? 0.5 : 0.38),
     line: dark ? mix(fill, '#ffffff', 0.2) : mix(fill, '#000000', 0.3),
-    text: contrast(fill, light) >= contrast(fill, ink) ? light : ink,
+    text,
+    mark: mix(fill, '#a9a9a6', dark ? 0.2 : 0.38),
+    glow: '',
   };
 }
 
@@ -61,13 +80,26 @@ function stroke(c) {
 function text(x, y, size, label, colour, extra = '') {
   return `<text x="${x}" y="${y}" font-size="${size}" fill="${colour}" ${FONT} ${extra}>${escXml(label)}</text>`;
 }
+// Night Mark text: reflective ink, tone-on-tone by day, glowing under flash.
+function markText(c, x, y, size, label, extra = '') {
+  return text(x, y, size, label, c.mark, `${c.glow} ${extra}`);
+}
 // Shrink a small logo so longer brand names still fit (base size fits maxChars).
 function fitSize(base, brand, maxChars) {
   return brand.length <= maxChars ? base : Math.max(8, Math.floor((base * maxChars) / brand.length));
 }
-function backPrint(c, brand, y = 290) {
-  const size = Math.max(22, Math.min(54, Math.floor(300 / Math.max(3, brand.length) * 1.25)));
-  return text(200, y, size, brand, c.text, 'letter-spacing="2"');
+function backPrint(c, label, y = 290) {
+  const size = Math.max(22, Math.min(54, Math.floor(300 / Math.max(3, label.length) * 1.25)));
+  return markText(c, 200, y, size, label, 'letter-spacing="2"');
+}
+// Back-yoke band: where the light from a car behind you lands.
+function yokeBand(c) {
+  return `<rect x="122" y="150" width="156" height="10" rx="2" fill="${c.mark}" ${c.glow}/>`;
+}
+// Reflective webbing key loop at the wearer's left hem (viewer's right from the front).
+function keyLoop(c, view, y = 410) {
+  const x = view === 'back' ? 112 : 280;
+  return `<rect x="${x}" y="${y}" width="8" height="22" rx="4" fill="none" stroke="${c.mark}" stroke-width="4" ${c.glow}/>`;
 }
 
 function hoodie(c, view, brand, { zip = false } = {}) {
@@ -75,35 +107,40 @@ function hoodie(c, view, brand, { zip = false } = {}) {
     return `<path d="${TOP_BODY}" fill="${c.fill}" ${stroke(c)}/>
       <path d="M150 116 C148 58 252 58 250 116 L238 206 C222 222 178 222 162 206 Z" fill="${c.shade}" ${stroke(c)}/>
       <path d="M200 70 L200 214" stroke="${c.line}" stroke-width="2"/>
+      ${yokeBand(c)}
       ${backPrint(c, brand, 300)}
-      <path d="M118 410 H282 M54 352 L97 360 M346 352 L303 360" fill="none" ${stroke(c)}/>`;
+      <path d="M118 410 H282 M54 352 L97 360 M346 352 L303 360" fill="none" ${stroke(c)}/>
+      ${keyLoop(c, view)}`;
   }
   const front = zip
     ? `<path d="M200 140 V432" stroke="${c.line}" stroke-width="4"/>
+       <rect x="194" y="146" width="12" height="18" rx="3" fill="${c.mark}" ${c.glow}/>
+       <rect x="194" y="410" width="12" height="18" rx="3" fill="${c.mark}" ${c.glow}/>
        <path d="M146 330 L166 400 M254 330 L234 400" fill="none" ${stroke(c)}/>
-       ${text(150, 236, 13, brand, c.text)}`
+       ${markText(c, 150, 236, 13, brand)}`
     : `<path d="M140 330 H260 L276 404 H124 Z" fill="none" ${stroke(c)}/>
-       ${text(200, 262, 20, brand, c.text, 'letter-spacing="1"')}`;
+       ${markText(c, 200, 262, 20, brand, 'letter-spacing="1"')}`;
   return `<path d="M148 122 C132 52 268 52 252 122 Z" fill="${c.shade}" ${stroke(c)}/>
     <path d="${TOP_BODY}" fill="${c.fill}" ${stroke(c)}/>
     <path d="M160 112 C172 152 228 152 240 112 C226 96 174 96 160 112 Z" fill="${c.inner}"/>
     ${front}
     <path d="M186 142 L183 200 M214 142 L217 200" stroke="${c.text}" stroke-width="4" stroke-linecap="round" opacity=".85"/>
-    <path d="M118 410 H282 M54 352 L97 360 M346 352 L303 360" fill="none" ${stroke(c)}/>`;
+    <path d="M118 410 H282 M54 352 L97 360 M346 352 L303 360" fill="none" ${stroke(c)}/>
+    ${keyLoop(c, view)}`;
 }
 
-function tee(c, view, brand, print) {
+function tee(c, view, brand, print, backLabel) {
   const body =
     view === 'back'
       ? 'M160 105 C180 114 220 114 240 105 L292 122 L350 175 L322 215 L290 195 L288 420 L112 420 L110 195 L78 215 L50 175 L108 122 Z'
       : 'M160 105 C180 132 220 132 240 105 L292 122 L350 175 L322 215 L290 195 L288 420 L112 420 L110 195 L78 215 L50 175 L108 122 Z';
   const collar = view === 'back' ? 'M160 105 C180 114 220 114 240 105' : 'M160 105 C180 132 220 132 240 105';
   let graphic;
-  if (view === 'back') graphic = backPrint(c, brand, 270);
+  if (view === 'back') graphic = backPrint(c, backLabel || brand, 270);
   else if (print) {
     const words = String(print).split(' ');
     graphic = words.map((w, i) => text(200, 240 + i * 52, 46, w, c.text, 'letter-spacing="1"')).join('');
-  } else graphic = text(200, 200, 18, brand, c.text, 'letter-spacing="1"');
+  } else graphic = markText(c, 200, 200, 18, brand, 'letter-spacing="1"');
   return `<path d="${body}" fill="${c.fill}" ${stroke(c)}/>
     <path d="${collar}" fill="none" stroke="${c.shade}" stroke-width="9" stroke-linecap="round"/>
     <path d="${collar}" fill="none" ${stroke(c)}/>
@@ -111,12 +148,17 @@ function tee(c, view, brand, print) {
     ${graphic}`;
 }
 
-function jacket(c, view, brand) {
+function jacket(c, view, brand, hour) {
   if (view === 'back') {
+    // full-back wordmark: the Headlight jacket's whole point
     return `<path d="${TOP_BODY}" fill="${c.fill}" ${stroke(c)}/>
       <path d="M160 112 C180 98 220 98 240 112 L236 128 C220 118 180 118 164 128 Z" fill="${c.shade}" ${stroke(c)}/>
-      ${backPrint(c, brand, 280)}
-      <path d="M118 414 H282" fill="none" ${stroke(c)}/>`;
+      ${yokeBand(c)}
+      ${backPrint(c, brand, 270)}
+      <rect x="128" y="300" width="144" height="16" rx="2" fill="${c.mark}" ${c.glow}/>
+      ${hour ? markText(c, 200, 350, 18, hour, 'letter-spacing="3"') : ''}
+      <path d="M118 414 H282" fill="none" ${stroke(c)}/>
+      ${keyLoop(c, view)}`;
   }
   const snaps = [182, 232, 282, 332, 382].map((y) => `<circle cx="200" cy="${y}" r="5" fill="${c.shade}" ${stroke(c)}/>`).join('');
   return `<path d="${TOP_BODY}" fill="${c.fill}" ${stroke(c)}/>
@@ -124,7 +166,8 @@ function jacket(c, view, brand) {
     <path d="M163 108 L200 152 L237 108 L254 118 L216 170 L200 154 L184 170 L146 118 Z" fill="${c.shade}" ${stroke(c)}/>
     ${snaps}
     <path d="M136 320 L160 312 M264 320 L240 312 M118 414 H282" fill="none" ${stroke(c)}/>
-    ${text(150, 222, 12, brand, c.text)}`;
+    ${markText(c, 150, 222, 12, brand)}
+    ${keyLoop(c, view)}`;
 }
 
 function bottoms(c, view, brand, { shorts = false } = {}) {
@@ -137,15 +180,19 @@ function bottoms(c, view, brand, { shorts = false } = {}) {
     : `<rect x="124" y="246" width="46" height="72" rx="4" fill="${c.shade}" ${stroke(c)}/><path d="M124 260 H170" ${stroke(c)}/>
        <rect x="230" y="246" width="46" height="72" rx="4" fill="${c.shade}" ${stroke(c)}/><path d="M230 260 H276" ${stroke(c)}/>
        <path d="M108 436 H188 M212 436 H292" fill="none" ${stroke(c)}/>`;
+  // shorts: side-seam stripes; cargos: reflective tape inside the rolled-up hem
+  const marks = shorts
+    ? `<path d="M131 100 L118 296 M269 100 L282 296" fill="none" stroke="${c.mark}" stroke-width="6" stroke-linecap="round" ${c.glow}/>`
+    : `<rect x="107" y="438" width="80" height="10" rx="2" fill="${c.mark}" ${c.glow}/><rect x="213" y="438" width="80" height="10" rx="2" fill="${c.mark}" ${c.glow}/>`;
   const detail =
     view === 'back'
       ? `<rect x="142" y="122" width="40" height="44" rx="3" fill="none" ${stroke(c)}/><rect x="218" y="122" width="40" height="44" rx="3" fill="none" ${stroke(c)}/>`
       : `<path d="M212 96 V160 Q212 176 200 180 M150 96 C150 124 140 140 124 146 M250 96 C250 124 260 140 276 146" fill="none" ${stroke(c)}/>`;
   const loops = [146, 200, 254].map((x) => `<rect x="${x - 3}" y="66" width="6" height="32" rx="2" fill="${c.shade}" ${stroke(c)}/>`).join('');
-  const tag = view === 'back' ? text(200, 90, 11, brand, c.text) : '';
+  const tag = view === 'back' ? markText(c, 200, 90, 11, brand) : '';
   return `<path d="${legs}" fill="${c.fill}" ${stroke(c)}/>
     <rect x="128" y="70" width="144" height="26" rx="3" fill="${c.shade}" ${stroke(c)}/>
-    ${loops}${detail}${pockets}${tag}`;
+    ${loops}${detail}${pockets}${marks}${tag}`;
 }
 
 function cap(c, view, brand) {
@@ -154,7 +201,8 @@ function cap(c, view, brand) {
       <path d="M112 300 C112 168 288 168 288 300 Z" fill="${c.fill}" ${stroke(c)}/>
       <path d="M200 176 V244 M200 176 C165 192 150 238 152 300 M200 176 C235 192 250 238 248 300" fill="none" ${stroke(c)}/>
       <path d="M166 300 C166 262 234 262 234 300 Z" fill="${c.inner}"/>
-      <rect x="160" y="278" width="80" height="10" rx="3" fill="${c.shade}" ${stroke(c)}/>
+      <rect x="160" y="278" width="80" height="10" rx="3" fill="${c.mark}" ${c.glow}/>
+      ${markText(c, 200, 254, fitSize(13, brand, 6), brand, 'letter-spacing="1"')}
       <circle cx="200" cy="175" r="8" fill="${c.shade}" ${stroke(c)}/>`;
   }
   // three-quarter side view: crown on the left, brim pointing right
@@ -165,7 +213,7 @@ function cap(c, view, brand) {
     <circle cx="170" cy="214" r="3" fill="${c.inner}"/>
     <path d="M96 300 H300" fill="none" stroke="${c.shade}" stroke-width="8" stroke-linecap="round"/>
     <path d="M278 292 C326 290 366 304 392 328 C368 340 322 334 282 314 Z" fill="${c.shade}" ${stroke(c)}/>
-    ${text(254, 256, fitSize(17, brand, 5), brand, c.text, 'letter-spacing="1"')}
+    ${markText(c, 254, 256, fitSize(17, brand, 5), brand, 'letter-spacing="1"')}
   </g>`;
 }
 
@@ -176,7 +224,7 @@ function beanie(c, view, brand) {
   const label =
     view === 'back'
       ? ''
-      : `<rect x="168" y="320" width="64" height="26" rx="2" fill="${c.text}"/>${text(200, 338, fitSize(11, brand, 6), brand, c.fill)}`;
+      : `<rect x="168" y="320" width="64" height="26" rx="2" fill="${c.mark}" ${c.glow}/>${text(200, 338, fitSize(11, brand, 6), brand, c.inner)}`;
   return `<circle cx="200" cy="196" r="32" fill="${c.shade}" ${stroke(c)}/>
     <path d="M122 330 C112 178 288 178 278 330 Z" fill="${c.fill}" ${stroke(c)}/>
     <rect x="112" y="300" width="176" height="74" rx="10" fill="${c.shade}" ${stroke(c)}/>
@@ -184,26 +232,40 @@ function beanie(c, view, brand) {
     ${label}`;
 }
 
+const GLOW_DEFS = `<defs><filter id="nm-glow" x="-50%" y="-50%" width="200%" height="200%">
+  <feGaussianBlur stdDeviation="5" result="b"/>
+  <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter></defs>`;
+
+/** view: 'front' | 'back' | 'flash' (night, under a camera flash). */
 export function placeholderSvg(product, view = 'front') {
-  const c = paletteFor(product.colour.hex);
+  const flash = view === 'flash';
+  const c = paletteFor(product.colour.hex, flash);
   const brand = config.brand.name.toUpperCase();
   const small = product.garment === 'cap' || product.garment === 'beanie';
+  // Under the flash we show the side where the Night Mark lives.
+  const side = flash ? (product.garment === 'beanie' || product.garment === 'shorts' ? 'front' : 'back') : view;
+  const backLabel = product.drop ? product.drop.hour : brand;
   let shape;
   switch (product.garment) {
-    case 'hoodie': shape = hoodie(c, view, brand); break;
-    case 'zip-hoodie': shape = hoodie(c, view, brand, { zip: true }); break;
-    case 'tee': shape = tee(c, view, brand, product.print); break;
-    case 'jacket': shape = jacket(c, view, brand); break;
-    case 'cargo': shape = bottoms(c, view, brand); break;
-    case 'shorts': shape = bottoms(c, view, brand, { shorts: true }); break;
-    case 'cap': shape = cap(c, view, brand); break;
-    case 'beanie': shape = beanie(c, view, brand); break;
-    default: shape = tee(c, view, brand);
+    case 'hoodie': shape = hoodie(c, side, brand); break;
+    case 'zip-hoodie': shape = hoodie(c, side, brand, { zip: true }); break;
+    case 'tee': shape = tee(c, side, brand, product.print, backLabel); break;
+    case 'jacket': shape = jacket(c, side, brand, product.drop && product.drop.hour); break;
+    case 'cargo': shape = bottoms(c, side, brand); break;
+    case 'shorts': shape = bottoms(c, side, brand, { shorts: true }); break;
+    case 'cap': shape = cap(c, side, brand); break;
+    case 'beanie': shape = beanie(c, side, brand); break;
+    default: shape = tee(c, side, brand, null, backLabel);
   }
   const shadowY = { cap: 356, beanie: 392, shorts: 320 }[product.garment] || 466;
+  const ground = flash
+    ? `<ellipse cx="200" cy="${shadowY}" rx="${small ? 120 : 160}" ry="14" fill="#ffffff" opacity=".05"/>`
+    : `<ellipse cx="200" cy="${shadowY}" rx="${small ? 100 : 130}" ry="10" fill="#000" opacity=".08"/>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${IMAGE_WIDTH} ${IMAGE_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}">
+    ${flash ? GLOW_DEFS : ''}
     <rect width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" fill="${c.bg}"/>
-    <ellipse cx="200" cy="${shadowY}" rx="${small ? 100 : 130}" ry="10" fill="#000" opacity=".08"/>
+    ${ground}
     ${shape}
   </svg>`;
 }
@@ -213,9 +275,10 @@ function svgDataUri(svg) {
 }
 
 const cache = new Map();
+const VIEW_LABELS = { front: 'front view', back: 'back view', flash: 'at night under a camera flash, Night Mark lit' };
 
 /**
- * All images for a product as [{ src, alt, placeholder }].
+ * All images for a product as [{ src, alt, placeholder, view }].
  * Real photos (product.images) always win over placeholders.
  */
 export function productImages(product) {
@@ -227,12 +290,14 @@ export function productImages(product) {
       src,
       alt: i === 0 ? label : `${label}, image ${i + 1}`,
       placeholder: false,
+      view: null,
     }));
   } else {
-    list = ['front', 'back'].map((view) => ({
+    list = ['front', 'back', 'flash'].map((view) => ({
       src: svgDataUri(placeholderSvg(product, view)),
-      alt: `${label}, ${view} view (illustration)`,
+      alt: `${label}, ${VIEW_LABELS[view]} (illustration)`,
       placeholder: true,
+      view,
     }));
   }
   cache.set(product.id, list);
