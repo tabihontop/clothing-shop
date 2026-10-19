@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shipping</title>
+  <meta name="description" content="Shipping costs, regions and delivery times.">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/pages/info.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header" class="header-slot"></div>
+
+  <main id="main" tabindex="-1" data-title="Shipping" data-description="Shipping costs, regions and delivery times.">
+    <article class="container narrow prose">
+      <p class="template-flag"><strong>Template:</strong> placeholder text. Edit <code>shipping.html</code> before you launch. Amounts below come from <code>js/config.js</code>.</p>
+      <h1 class="page-title">Shipping</h1>
+      <h2>Where we ship</h2>
+      <p>We currently ship to addresses in the <span data-fill="region">EU</span>.</p>
+      <h2>Costs</h2>
+      <ul>
+        <li>Orders of <span data-fill="free-threshold"></span> or more: <strong>free shipping</strong>.</li>
+        <li>Orders below that: flat rate of <span data-fill="flat-fee"></span>.</li>
+      </ul>
+      <h2>Delivery times</h2>
+      <p>Orders are packed within 1-2 working days. Delivery usually takes <span data-fill="delivery-estimate"></span> after dispatch. You will get a tracking link by email.</p>
+      <h2>Questions</h2>
+      <p>Email <a data-fill-href="email" href="#"><span data-fill="email"></span></a>.</p>
+    </article>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>

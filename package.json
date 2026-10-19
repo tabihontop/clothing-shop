@@ -1,0 +1,12 @@
+{
+  "name": "streetwear-shop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static streetwear shop: plain HTML, CSS and ES modules. No build step.",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node tests/logic.test.js",
+    "check": "node --check js/config.js && node --check js/money.js && node --check js/pricing.js && node --check js/cart.js && node --check js/catalog.js && node --check js/payment.js && node --check js/images.js && node --check js/dom.js && node --check js/seo.js && node --check js/store.js && node --check js/components.js && node --check js/cart-drawer.js && node --check js/layout.js && node --check js/data/products.js && node --check js/pages/home.js && node --check js/pages/shop.js && node --check js/pages/product.js && node --check js/pages/checkout.js && node --check js/pages/thank-you.js && node --check js/pages/info.js && node --check tests/logic.test.js"
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop all</title>
+  <meta name="description" content="Shop all streetwear: hoodies, tees, cargos, outerwear and caps.">
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/pages/shop.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header" class="header-slot"></div>
+
+  <main id="main" tabindex="-1">
+    <div class="container">
+      <header class="page-head">
+        <h1 class="page-title" data-shop-title>Shop all</h1>
+        <p class="page-lead" data-shop-blurb></p>
+      </header>
+      <div class="shop__controls">
+        <nav aria-label="Filter by category" data-category-nav></nav>
+        <div class="field field--inline">
+          <label for="sort">Sort by</label>
+          <select id="sort" name="sort"></select>
+        </div>
+      </div>
+      <p class="shop__count" role="status" data-count></p>
+      <ul class="grid" data-grid></ul>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+  <noscript><p class="noscript">This shop needs JavaScript to show products and the cart.</p></noscript>
+</body>
+</html>
