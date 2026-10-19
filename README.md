@@ -1,4 +1,4 @@
-# KERB streetwear shop (static)
+# NOCTURN streetwear shop (static)
 
 A small online clothing shop built with plain HTML, CSS and JavaScript (ES modules).
 There is no server and no build step, so any static host can serve it, including
@@ -201,23 +201,23 @@ or Snipcart, both of which check prices on their own servers.
 
 ## 7. Publish on GitHub Pages (free)
 
-1. Create a repository on GitHub, e.g. `kerb-shop`, and push this folder's contents
+1. Create a repository on GitHub, e.g. `clothing-shop`, and push this folder's contents
    to it (the files must be at the repository root, so `index.html` is at the top).
    ```bash
    git init
    git add .
    git commit -m "First version of the shop"
    git branch -M main
-   git remote add origin https://github.com/<you>/kerb-shop.git
+   git remote add origin https://github.com/<you>/clothing-shop.git
    git push -u origin main
    ```
 2. On GitHub: **Settings > Pages > Build and deployment > Source: Deploy from a branch**,
    branch `main`, folder `/ (root)`, Save.
-3. After a minute the site is live at `https://<you>.github.io/kerb-shop/`.
+3. After a minute the site is live at `https://<you>.github.io/clothing-shop/`.
 4. Update the Stripe Payment Links' redirect to
-   `https://<you>.github.io/kerb-shop/thank-you.html`.
+   `https://<you>.github.io/clothing-shop/thank-you.html`.
 
-All links in the site are relative, so it works in a sub-folder like `/kerb-shop/`.
+All links in the site are relative, so it works in a sub-folder like `/clothing-shop/`.
 The empty `.nojekyll` file tells GitHub Pages to serve the files as they are.
 For a custom domain, see Settings > Pages > Custom domain.
 

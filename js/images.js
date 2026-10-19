@@ -61,6 +61,10 @@ function stroke(c) {
 function text(x, y, size, label, colour, extra = '') {
   return `<text x="${x}" y="${y}" font-size="${size}" fill="${colour}" ${FONT} ${extra}>${escXml(label)}</text>`;
 }
+// Shrink a small logo so longer brand names still fit (base size fits maxChars).
+function fitSize(base, brand, maxChars) {
+  return brand.length <= maxChars ? base : Math.max(8, Math.floor((base * maxChars) / brand.length));
+}
 function backPrint(c, brand, y = 290) {
   const size = Math.max(22, Math.min(54, Math.floor(300 / Math.max(3, brand.length) * 1.25)));
   return text(200, y, size, brand, c.text, 'letter-spacing="2"');
@@ -161,7 +165,7 @@ function cap(c, view, brand) {
     <circle cx="170" cy="214" r="3" fill="${c.inner}"/>
     <path d="M96 300 H300" fill="none" stroke="${c.shade}" stroke-width="8" stroke-linecap="round"/>
     <path d="M278 292 C326 290 366 304 392 328 C368 340 322 334 282 314 Z" fill="${c.shade}" ${stroke(c)}/>
-    ${text(254, 256, 17, brand, c.text, 'letter-spacing="1"')}
+    ${text(254, 256, fitSize(17, brand, 5), brand, c.text, 'letter-spacing="1"')}
   </g>`;
 }
 
@@ -172,7 +176,7 @@ function beanie(c, view, brand) {
   const label =
     view === 'back'
       ? ''
-      : `<rect x="168" y="320" width="64" height="26" rx="2" fill="${c.text}"/>${text(200, 338, 11, brand, c.fill)}`;
+      : `<rect x="168" y="320" width="64" height="26" rx="2" fill="${c.text}"/>${text(200, 338, fitSize(11, brand, 6), brand, c.fill)}`;
   return `<circle cx="200" cy="196" r="32" fill="${c.shade}" ${stroke(c)}/>
     <path d="M122 330 C112 178 288 178 278 330 Z" fill="${c.fill}" ${stroke(c)}/>
     <rect x="112" y="300" width="176" height="74" rx="10" fill="${c.shade}" ${stroke(c)}/>

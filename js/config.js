@@ -6,7 +6,7 @@
 
 export const config = {
   brand: {
-    name: 'KERB',
+    name: 'NOCTURN',
     tagline: 'Street-level essentials',
     description:
       'Heavyweight hoodies, boxy tees, cargos and caps. Built for the street, made to last.',
